@@ -1,9 +1,9 @@
 # Decision_Trees
 Decision Tree Classifier from scratch using Python
 
-#Inspired from Josh Gordon
-#https://www.youtube.com/watch?v=LDRbO9a6XPU
-#Instead of Gini Impurity, I have chosed to use Entropy for finding Information Gain in order to decide creating child nodes
+- Inspired from Josh Gordon
+- https://www.youtube.com/watch?v=LDRbO9a6XPU
+- Instead of Gini Impurity, I have chosed to use Entropy for finding Information Gain in order to decide creating child nodes
 
 For the input dataset, you should add a file named dataset.txt to the same directory as main.py
 
