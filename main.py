@@ -4,7 +4,7 @@
 
 import math
 
-dataset_file = open('dataset4.txt', 'r')
+dataset_file = open('dataset.txt', 'r')
 
 dataset = []
 
