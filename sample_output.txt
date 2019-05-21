@@ -1,0 +1,15 @@
+If we test the program using test input ['Green', '3', 'Apple'], here is the output should look like:
+
+Is diameter == 3?
+--> True:
+  Is color == Yellow?
+  --> True:
+    Predict {'Apple': 1, 'Lemon': 1}
+  --> False:
+    Predict {'Apple': 1}
+--> False:
+  Predict {'Grape': 2}
+---------------------------------
+Test Output is:
+
+{'Apple': '100%'}
