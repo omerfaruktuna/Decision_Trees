@@ -1,7 +1,3 @@
-#Inspired from Josh Gordon
-#https://www.youtube.com/watch?v=LDRbO9a6XPU
-#Instead of Gini Impurity, I have chosed to use Entropy for finding Information Gain in order to decide creating child nodes
-
 import math
 
 dataset_file = open('dataset.txt', 'r')
@@ -20,9 +16,9 @@ for line in dataset_file.readlines():
 
 dataset_file.close()
 
-header = ["color", "diameter", "label"]
+title = ["color", "diameter", "label"]
 
-def is_numeric(value):
+def check_if_number(value):
     return isinstance(value, int) or isinstance(value, float)
 
 def unique_vals(rows, col):
@@ -37,7 +33,7 @@ def class_counts(rows):
         counts[label] += 1
     return counts
 
-class Question:
+class Query:
 
     def __init__(self, column, value):
         self.column = column
@@ -45,7 +41,7 @@ class Question:
 
     def match(self, example):
         val = example[self.column]
-        if is_numeric(val):
+        if check_if_number(val):
             return val >= self.value
         else:
             return val == self.value
@@ -53,15 +49,15 @@ class Question:
     def __repr__(self):
 
         condition = "=="
-        if is_numeric(self.value):
+        if check_if_number(self.value):
             condition = ">="
         return "Is %s %s %s?" % (
-            header[self.column], condition, str(self.value))
+            title[self.column], condition, str(self.value))
 
-def partition(rows, question):
+def partition(rows, query):
     true_rows, false_rows = [], []
     for row in rows:
-        if question.match(row):
+        if query.match(row):
             true_rows.append(row)
         else:
             false_rows.append(row)
@@ -87,10 +83,10 @@ def info_gain_entropy(left, right, current_uncertainty):
     p = float(len(left)) / (len(left) + len(right))
     return current_uncertainty - p * entropy(left) - (1 - p) * entropy(right)
 
-def find_best_split(rows):
+def where_to_divide(rows):
 
     best_gain = 0
-    best_question = None
+    best_query = None
     current_uncertainty = entropy(rows)
     n_features = len(rows[0]) - 1
 
@@ -100,9 +96,9 @@ def find_best_split(rows):
 
         for val in values:
 
-            question = Question(col, val)
+            query = Query(col, val)
 
-            true_rows, false_rows = partition(rows, question)
+            true_rows, false_rows = partition(rows, query)
 
             if len(true_rows) == 0 or len(false_rows) == 0:
                 continue
@@ -110,45 +106,45 @@ def find_best_split(rows):
             gain = info_gain_entropy(true_rows, false_rows, current_uncertainty)
 
             if gain >= best_gain:
-                best_gain, best_question = gain, question
+                best_gain, best_query = gain, query
 
-    return best_gain, best_question
+    return best_gain, best_query
 
-class Leaf:
+class End_Node:
     def __init__(self, rows):
         self.predictions = class_counts(rows)
        
 class  Decision_Node:
     def __init__(self,
-                 question,
+                 query,
                  true_branch,
                  false_branch):
-        self.question = question
+        self.query = query
         self.true_branch = true_branch
         self.false_branch = false_branch
 
 def  build_tree(rows):
 
-    gain, question = find_best_split(rows)
+    gain, query = where_to_divide(rows)
 
     if gain == 0:
-        return Leaf(rows)
+        return End_Node(rows)
 
-    true_rows, false_rows = partition(rows, question)
+    true_rows, false_rows = partition(rows, query)
 
     true_branch = build_tree(true_rows)
 
     false_branch = build_tree(false_rows)
 
-    return Decision_Node(question, true_branch, false_branch)
+    return Decision_Node(query, true_branch, false_branch)
 
 def print_tree(node, spacing=""):
 
-    if isinstance(node, Leaf):
+    if isinstance(node, End_Node):
         print (spacing + "Predict", node.predictions)
         return
 
-    print (spacing + str(node.question))
+    print (spacing + str(node.query))
 
     print (spacing + '--> True:')
     print_tree(node.true_branch, spacing + "  ")
@@ -166,20 +162,17 @@ print("---------------------------------")
 
 def  classify(row, node):
 
-    if isinstance(node, Leaf):
+    if isinstance(node, End_Node):
         return node.predictions
 
-    if node.question.match(row):
+    if node.query.match(row):
         return classify(row, node.true_branch)
     else:
         return classify(row, node.false_branch)
 
 #print(classify(dataset[0], my_tree))
 
-
-
-def  print_leaf(counts):
-    """A nicer way to print the predictions at a leaf."""
+def  print_End_Node(counts):
     total = sum(counts.values()) * 1.0
     probs = {}
     for lbl in counts.keys():
@@ -188,6 +181,6 @@ def  print_leaf(counts):
 
 print("Test Output is:\n")
 
-print(print_leaf(classify(dataset[0], my_tree)))
+print(print_End_Node(classify(dataset[0], my_tree)))
 
 print("\n")
