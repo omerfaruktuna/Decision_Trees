@@ -1,3 +1,7 @@
+#Inspired from Josh Gordon
+#https://www.youtube.com/watch?v=LDRbO9a6XPU
+#Instead of Gini Impurity, I have chosed to use Entropy for finding Information Gain in order to decide creating child nodes
+
 import math
 
 dataset_file = open('dataset.txt', 'r')
